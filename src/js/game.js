@@ -1,27 +1,39 @@
-import '../css/style.css'
-import { Actor, Engine, Vector, DisplayMode } from "excalibur"
-import { Resources, ResourceLoader } from './resources.js'
+// src/js/game.js
+
+import { Engine, DisplayMode } from 'excalibur';
+import { ResourceLoader } from './resources.js';
+import { IntroScene } from './introscene.js';
+import { LevelOneScene } from './levelone.js';
+import { LevelTwoScene } from './leveltwo.js';
+import { GameOverScene } from './gameover.js'; // Import GameOverScene
+import { WinningScene } from './winningscene.js'; // Import WinningScene
 
 export class Game extends Engine {
-
     constructor() {
-        super({ 
+        super({
             width: 1280,
-            height: 720,
-            maxFps: 60,
+            height: 670,
             displayMode: DisplayMode.FitScreen
-         })
-        this.start(ResourceLoader).then(() => this.startGame())
+        });
+
+        this.start(ResourceLoader).then(() => this.onInitialize());
     }
 
-    startGame() {
-        console.log("start de game!")
-        const fish = new Actor()
-        fish.graphics.use(Resources.Fish.toSprite())
-        fish.pos = new Vector(400, 300)
-        fish.vel = new Vector(-10,0)
-        this.add(fish)
+    onInitialize() {
+        this.addSceneSafely('intro', new IntroScene());
+        this.addSceneSafely('levelOne', new LevelOneScene());
+        this.addSceneSafely('levelTwo', new LevelTwoScene());
+        this.addSceneSafely('gameOver', new GameOverScene());
+        this.addSceneSafely('winning', new WinningScene());
+
+        this.goToScene('intro');
+    }
+
+    addSceneSafely(name, scene) {
+        if (!this.scenes[name]) {
+            this.addScene(name, scene);
+        }
     }
 }
 
-new Game()
+new Game();
